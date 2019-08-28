@@ -11,10 +11,14 @@ import UIKit
 class TodoeyTableViewController: UITableViewController {
     
     var itemArray = ["Acquire Currency", "Disregard females", "Kick names and take ass"]
+    var defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
+            itemArray = items
+        }
     }
     
     //MARK - TableView Datasource Methods
@@ -51,6 +55,7 @@ class TodoeyTableViewController: UITableViewController {
             
             self.itemArray.append(textField.text!)
             self.tableView.reloadData()
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
         }
         
         alert.addTextField { (alertTextField) in
