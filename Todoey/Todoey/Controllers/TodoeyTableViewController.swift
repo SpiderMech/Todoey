@@ -10,15 +10,26 @@ import UIKit
 
 class TodoeyTableViewController: UITableViewController {
     
-    var itemArray = ["Acquire Currency", "Disregard females", "Kick names and take ass"]
+    var itemArray = [Item]()
     var defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
-            itemArray = items
-        }
+        
+        let newItem = Item()
+        newItem.title = "Acquire Currency"
+        itemArray.append(newItem)
+        let newItem2 = Item()
+        newItem2.title = "Disregard females"
+        itemArray.append(newItem2)
+        let newItem3 = Item()
+        newItem3.title = "Kick names and take ass"
+        itemArray.append(newItem3)
+        
+        //        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
+//            itemArray = items
+//        }
     }
     
     //MARK - TableView Datasource Methods
@@ -28,21 +39,24 @@ class TodoeyTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) as UITableViewCell
+        let currentItem = itemArray[indexPath.row]
         
-        cell.textLabel?.text = itemArray[indexPath.row]
+        cell.textLabel?.text = currentItem.title
+        
+        // Ternary operator for cell.accessoryType
+        cell.accessoryType = currentItem.done ? .checkmark : .none
         
         return cell
     }
     
     //MARK - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-           tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         tableView.deselectRow(at: indexPath, animated: true)
+        // Reload the table view to update Item's done property by calling datasource methods again
+        tableView.reloadData()
     }
     
     //MARK - Add Button Pressed
@@ -53,7 +67,10 @@ class TodoeyTableViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Item To Todoey", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-            self.itemArray.append(textField.text!)
+            let newItem = Item()
+            newItem.title = textField.text!
+            
+            self.itemArray.append(newItem)
             self.tableView.reloadData()
             self.defaults.set(self.itemArray, forKey: "ToDoListArray")
         }
